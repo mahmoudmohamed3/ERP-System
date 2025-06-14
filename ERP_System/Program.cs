@@ -1,4 +1,5 @@
 using ERP_System.Persistence;
+using ERP_System.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,6 +12,8 @@ builder.Services.AddControllers();
 //builder.Services.AddOpenApi();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddScoped<ITreasuryService , TreasuryService>();
 
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ??

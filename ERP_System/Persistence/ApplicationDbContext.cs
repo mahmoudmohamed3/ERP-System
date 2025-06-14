@@ -11,7 +11,7 @@ namespace ERP_System.Persistence
         {
 
         }
-        DbSet<Treasury> Treasuries {  get; set; }
+        public DbSet<Treasury> Treasuries {  get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
