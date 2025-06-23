@@ -1,5 +1,6 @@
 ﻿using ERP_System.Persistence.Entities;
 using ERP_System.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Net.WebSockets;
@@ -10,21 +11,20 @@ namespace ERP_System.Controllers
     [ApiController]
     public class TtreasuriesController (ITreasuryService treasury) : ControllerBase
     {
-       
         private readonly ITreasuryService _treasury = treasury;
 
         [HttpGet("")]
-        public IActionResult GetAll()
+        [Authorize]
+        public async Task<IActionResult> GetAll()
         {
-            var treasury = _treasury.GetAll();
-
+            var treasury = await _treasury.GetAllAsync();
             return Ok(treasury);
         }
 
         [HttpGet("{id}")]
-        public IActionResult Get(int id)
+        public async Task<IActionResult> Get(int id)
         {
-            var treasury = _treasury.GetById(id);
+            var treasury = await _treasury.GetByIdAsync(id);
 
             if (treasury == null)
                 return NotFound();
@@ -33,20 +33,16 @@ namespace ERP_System.Controllers
         }
 
         [HttpPost("")]
-        public IActionResult Create(Treasury treasury)
+        public async Task<IActionResult> Create(Treasury treasury)
         {
-
-            _treasury.Create(treasury);
-
-            return CreatedAtAction(nameof(Get) , new { id  = treasury.TreasuryID } , treasury);
-
+            var createdTreasury = await _treasury.CreateAsync(treasury);
+            return CreatedAtAction(nameof(Get), new { id = createdTreasury.TreasuryID }, createdTreasury);
         }
 
         [HttpPut("")]
-        public IActionResult Update(int id, Treasury treasury)
+        public async Task<IActionResult> Update(int id, Treasury treasury)
         {
-            var updated = _treasury.Update(id , treasury);
-
+            var updated = await _treasury.UpdateAsync(id, treasury);
 
             if (updated == false)
             {
@@ -54,20 +50,17 @@ namespace ERP_System.Controllers
             }
 
             return NoContent();
-
         }
 
         [HttpDelete("")]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            var treasury = _treasury.Delete(id);
+            var treasury = await _treasury.DeleteAsync(id);
 
             if (treasury == false)
                 return NotFound();
 
             return NoContent();
         }
-
-
     }
 }

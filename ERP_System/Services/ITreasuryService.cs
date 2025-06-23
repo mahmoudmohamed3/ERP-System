@@ -4,10 +4,10 @@ namespace ERP_System.Services
 {
     public interface ITreasuryService
     {
-        IEnumerable<Treasury> GetAll();
-        Treasury? GetById(int id);
-        Treasury Create(Treasury treasury);
-        bool Update(int id, Treasury treasury);
-        bool Delete(int id);
+        Task<IEnumerable<Treasury>> GetAllAsync();
+        Task<Treasury?> GetByIdAsync(int id);
+        Task<Treasury> CreateAsync(Treasury treasury);
+        Task<bool> UpdateAsync(int id, Treasury treasury);
+        Task<bool> DeleteAsync(int id);
     }
 }

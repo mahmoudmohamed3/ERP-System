@@ -6,18 +6,16 @@ namespace ERP_System.Services
 {
     public class TreasuryService (ApplicationDbContext context) : ITreasuryService
     {
-
         private readonly ApplicationDbContext _context = context;
 
-        public IEnumerable<Treasury> GetAll()
+        public async Task<IEnumerable<Treasury>> GetAllAsync()
         {
-            return _context.Treasuries.ToList();
+            return await _context.Treasuries.ToListAsync();
         }
 
-
-        public Treasury? GetById(int id)
+        public async Task<Treasury?> GetByIdAsync(int id)
         {
-            var treasure = _context.Treasuries.FirstOrDefault(x => x.TreasuryID == id);
+            var treasure = await _context.Treasuries.FirstOrDefaultAsync(x => x.TreasuryID == id);
 
             if (treasure == null)
             {
@@ -27,19 +25,17 @@ namespace ERP_System.Services
             return treasure;
         }
 
-
-        public Treasury Create(Treasury treasury)
+        public async Task<Treasury> CreateAsync(Treasury treasury)
         {
-            _context.Add(treasury);
-            _context.SaveChanges();
+            await _context.AddAsync(treasury);
+            await _context.SaveChangesAsync();
 
             return treasury;
         }
-       
 
-        public bool Update(int id, Treasury treasury)
+        public async Task<bool> UpdateAsync(int id, Treasury treasury)
         {
-            var currentTreasury = _context.Treasuries.Find(id);
+            var currentTreasury = await _context.Treasuries.FindAsync(id);
 
             if (currentTreasury == null)
                 return false;
@@ -49,22 +45,20 @@ namespace ERP_System.Services
             currentTreasury.LastUpdatedOn = DateTime.Now;
             currentTreasury.IsActive = treasury.IsActive;
 
-            _context.SaveChanges();
-
+            await _context.SaveChangesAsync();
 
             return true;
         }
 
-
-        public bool Delete(int id)
+        public async Task<bool> DeleteAsync(int id)
         {
-            var Treasury = _context.Treasuries.Find(id);
+            var Treasury = await _context.Treasuries.FindAsync(id);
 
             if (Treasury == null)
                 return false;
 
             _context.Treasuries.Remove(Treasury);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
             return true;
         }
