@@ -1,12 +1,3 @@
-using ERP_System.Authentication;
-using ERP_System.Persistence;
-using ERP_System.Persistence.Entities;
-using ERP_System.Services;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,10 +16,21 @@ builder.Services.AddSwaggerGen();
 
 
 //Start Authentication
-builder.Services.AddSingleton<IJwtProvider, JwtProvider>();
 
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
+
+
+builder.Services.AddSingleton<IJwtProvider, JwtProvider>();
+
+//builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection(JwtOptions.SectionName));
+builder.Services.AddOptions<JwtOptions>()
+    .BindConfiguration(JwtOptions.SectionName)
+    .ValidateDataAnnotations()
+    .ValidateOnStart();
+
+
+var jwtSettings = builder.Configuration.GetSection(JwtOptions.SectionName).Get<JwtOptions>();
 
 builder.Services.AddAuthentication(options =>
 {
@@ -45,12 +47,14 @@ builder.Services.AddAuthentication(options =>
         ValidateAudience = true,
         ValidateLifetime = true,
         IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes("YEvrYq0irZOE59iBaEORQmstaTmzMIM1")
+                Encoding.UTF8.GetBytes(jwtSettings?.key!)
         ),
-        ValidIssuer = "ERP_SystemApp",        
-        ValidAudience = "ERP_SystemApp users" 
+        ValidIssuer = jwtSettings?.Issuer,
+        ValidAudience = jwtSettings?.Audience
     };
 });
+
+
 
 //End Authentication
 

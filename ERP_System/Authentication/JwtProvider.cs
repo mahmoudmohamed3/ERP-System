@@ -1,13 +1,13 @@
-﻿using ERP_System.Persistence.Entities;
-using Microsoft.IdentityModel.Tokens;
+﻿using Microsoft.Extensions.Options;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Text;
 
 namespace ERP_System.Authentication
 {
-    public class JwtProvider : IJwtProvider
+    public class JwtProvider(IOptions<JwtOptions> jwtOptions) : IJwtProvider
     {
+        private readonly JwtOptions _jwtOptions = jwtOptions.Value;
+
         public (string Token, int ExpiresIn) GenerateToken(ApplicationUser user)
         {
             Claim[] claims = [
@@ -16,10 +16,10 @@ namespace ERP_System.Authentication
             new(JwtRegisteredClaimNames.GivenName, user.FirstName),
             new(JwtRegisteredClaimNames.FamilyName, user.LastName),
             new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-        ];
+            ];
 
             var symmetricSecurityKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes("YEvrYq0irZOE59iBaEORQmstaTmzMIM1")
+                Encoding.UTF8.GetBytes(_jwtOptions.key)
             );
 
             var signingCredentials = new SigningCredentials(
@@ -27,11 +27,11 @@ namespace ERP_System.Authentication
                 SecurityAlgorithms.HmacSha256
             );
 
-            var expiresIn = 30;
+            var expiresIn = _jwtOptions.ExpiryMinutes;
 
             var token = new JwtSecurityToken(
-                issuer: "ERP_SystemApp",
-                audience: "ERP_SystemApp users",
+                issuer: _jwtOptions.Issuer,
+                audience: _jwtOptions.Audience,
                 claims: claims,
                 expires: DateTime.UtcNow.AddMinutes(expiresIn),
                 signingCredentials: signingCredentials

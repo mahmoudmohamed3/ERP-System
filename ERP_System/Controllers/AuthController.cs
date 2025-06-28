@@ -1,8 +1,4 @@
-﻿using ERP_System.Contracts.Authentication;
-using ERP_System.Services;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-
+﻿
 namespace ERP_System.Controllers
 {
     [Route("[controller]")]
@@ -20,5 +16,6 @@ namespace ERP_System.Controllers
                 ? BadRequest("Invalid Email/Password") 
                 :Ok(responseResult);
         }
+
     }
 }

@@ -1,6 +1,4 @@
-﻿using ERP_System.Persistence.Entities;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
+﻿
 
 namespace ERP_System.Persistence.EntitiesConfiguration
 {
